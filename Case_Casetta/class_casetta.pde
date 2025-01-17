@@ -14,6 +14,5 @@ class Casetta extends Casa{
     triangle(posX-20, posY-15, posX+20, posY-15, posX, posY-30);
     fill(255);
     rect(posX, posY+10, 5, 10);
-    
   }
 }
