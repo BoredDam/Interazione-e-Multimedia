@@ -40,7 +40,7 @@ K =
 \end{pmatrix}
 $$
 
-## 9. Contrast Stretching
+## 9. Espansione del Contrasto
 È un filtro puntuale basato sulla normalizzazione dei valori di grigio.\
 Quando i valori di grigio minimo e massimo non coincidono rispettivamente con 0 e 255, possiamo "stretchare" il range dinamico dell'immagine in maniera tale da coprire il range massimo.
 
