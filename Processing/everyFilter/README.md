@@ -8,6 +8,7 @@ La prima immagine in alto a sinistra è il nostro input, [lenna](http://lenna.or
 ## 2. Filtro Gamma (incupimento)
 
 $$ g(x,y) = c \cdot f(x,y)^\gamma $$
+
 Con $\gamma$ coefficiente e $c$
 
 $$ c = \frac{255}{255^\gamma} $$
@@ -15,9 +16,10 @@ $$ c = \frac{255}{255^\gamma} $$
 ## 3. Filtro Logaritmico (schiarimento)
 
 $$ g(x,y) = c \cdot \log(f(x,y) + 1) $$
-Con $\gamma$ coefficiente e $c$
 
-$$ c = \frac{255}{\log(256)}$$
+Con $c$ uguale a
+
+$$ c = \frac{255}{\log(256)} $$
 
 ## 4. Filtro di Negativo
 
