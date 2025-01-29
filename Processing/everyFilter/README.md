@@ -1,7 +1,7 @@
 # VARI FILTRI IN PROCESSING
 
 ![alt text](manyLennaFilters.png)
-
+-50 sfumature di lenna
 ## 1. Immagine di input
 La prima immagine in alto a sinistra è il nostro input, [lenna](http://lenna.org/).png.
 
