@@ -5,7 +5,7 @@ Questa repository contiene alcuni codici di esercizi in Processing e appunti rel
 Gli esercizi includono filtri, esercizi vari ed esami degli anni precedenti.
 
 ## Appunti in LaTeX
-Gli appunti sono scritti in LaTeX, e riguardano tutta la parte di teoria, offrendo un excursus piuttosto completo di tutta la materia, con rielaborazioni di alcune esposizioni e materiali in più per facilitare la comprensione di alcuni argomenti.
+Gli appunti sono scritti in LaTeX, e riguardano tutta la parte di teoria, offrendo un excursus piuttosto completo di tutta la materia, con rielaborazioni di alcune esposizioni e materiali in più per facilitare la comprensione di alcuni argomenti. Si consiglia di scaricare il PDF per usufruire al meglio dei collegamenti ipertestuali (l'indice è interattivo e sono presenti alcuni link a video).
 
 
 ### Importante!
