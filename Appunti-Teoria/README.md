@@ -1,0 +1,107 @@
+# Indice degli argomenti trattati
+
+- Introduzione all'image processing
+- Leggi della percezione visiva
+    - Bande di Mach
+- Rappresentare un'immagine
+    - Illuminazione e riflettanza
+    - Discretizzare per digitalizzare
+    - Raster vs Vettoriale
+    - Tipologie di immagini (bianco e nero, scala di grigi, a colori)
+- Operazioni su immagini e matrici
+    - Definizione di vicini
+    - Trasformazioni affini
+    - Forward e inverse mapping, vantaggi
+- Interpolazione
+    - Zooming in: nearest neighbour, bilineare e bicubica
+    - Zooming out: decimazione, media
+- Stimare la qualità degli algoritmi di image processing
+    - MSE
+    - PSNR
+- Acquisire immagini digitali
+    - Sensori CCD
+    - Processo di cattura
+    - Color filter array e bayer pattern
+    - Color interpolation
+    - Gameboy camera?!
+- Risoluzione
+    - Unità di misura
+- L'occhio
+    - La retina, i coni e i bastoncelli
+    - Pinhole model, cristallino e messa a fuoco
+    - La lente sottile
+    - Magnificazione
+- Campionamento
+    - Nyquist Rate
+    - Teorema di Shannon
+    - Aliasing
+    - Undersampling e aliasing temporale (video)
+- Quantizzazione
+    - Procedura generale e implicazioni
+    - Distribuzione dei livelli di quantizzazione: uniforme e non-uniforme (logaritmica)
+- Colore
+    - Lo spettro elettromagnetico
+    - La luce visibile
+    - Percezione dei colori
+- Spazi di colore
+    - Teoria del tristimolo
+    - Colori primari e secondari
+    - Diagramma cromatico CIE
+    - Spazio LCh
+    - HSV
+    - RGB e CMY
+    - Sintesi additiva e sottrattiva
+    - YUV
+    - YCbCr
+- Immagini a colori in memoria
+    - Colori indicizzati
+    - Re-indexing
+- Istogramma
+    - Contrast stretching
+    - Normalizzazione lineare
+    - Equalizzazione, algoritmo
+- Operatori puntuali
+    - LUT
+    - Negativo e altri filtri puntuali semplici
+    - Incupimento e schiarimento (logaritmo e gamma)
+    - Binarizzazione (o sogliatura)
+    - Alterazione del contrasto
+- Operatori locali
+    - Concetti di algebra lineare
+    - Operatori shift invariant, lineari
+    - Kernel
+    - Convoluzione e filtri convolutivi
+    - Problema dei bordi relativi ai filtri convolutivi
+    - Operatore mediano
+    - Minimo, massimo
+    - N-box
+    - N-binomiale
+    - Rumore
+        - Rumore sale e pepe
+        - Rumore gaussiano
+    - Edge detection
+        - Sobel, Prewitt, Laplaciano
+        - Sharpening
+    - Bit-plane
+        - Sogliatura dei bit-planes
+        - Binario puro, codifica gray
+- Trasformata di Fourier e dominio delle frequenze
+    - Teorema di Fourier
+    - Trasformata discreta di Fourier
+    - Proprietà della trasformata di Fourier
+    - Teorema della convoluzione e conseguenze
+    - Filtri passa basso, passa alto e band reject
+        - Ideale
+        - Butterworth
+        - Gaussiano
+- Compressione
+    - Approcci lossy e lossless
+    - Encoder e decoder
+    - Compressione lossless
+        - Teorema di Shannon per la compressione
+        - Codifica di Huffman
+    - Compressione lossy
+        - Requantization
+    - JPEG e tutti i suoi passaggi
+        - Pro e contro di JPEG
+        - JPEG 2000
