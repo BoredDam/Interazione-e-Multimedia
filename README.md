@@ -1,5 +1,5 @@
-# Interazione e Multimedia (2024)
-Questa repository contiene alcuni codici di esercizi in Processing e appunti relativi alla materia Interazione e Multimedia, aggiornati al 2024.
+# Interazione e Multimedia (2024-2025)
+Questa repository contiene alcuni codici di esercizi in Processing e appunti relativi alla materia Interazione e Multimedia, aggiornati al 2025.
 
 ## Esercizi in Processing
  
