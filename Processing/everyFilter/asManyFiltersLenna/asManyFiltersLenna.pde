@@ -250,37 +250,78 @@ PImage cutX(PImage I) {
 }
 
 
-// ESPANSIONE DEL CONTRASTO
-//
-//
+// channel:
+// 0 = grayscale (tutti i canali scalati allo stesso modo, usando brightness)
+// 1 = solo rosso
+// 2 = solo verde
+// 3 = solo blu
+// 
+PImage applyContrastStretching(PImage I,
+                               float inMin, float inMax,
+                               float outMin, float outMax,
+                               int channel) {
+  PImage newImg = I.copy();
 
-PImage contrastStr(PImage I) {
+  I.loadPixels();
+  newImg.loadPixels();
 
-  PImage out = I.copy();
-  out.loadPixels();
-  float min = red(out.pixels[0]);
-  float max = red(out.pixels[0]);
-  for(int i=0; i<out.pixels.length; i++){
-    
-    if (min>red(out.pixels[i])) {
-      min = red(out.pixels[i]);
-    }
-
-    if (max<red(out.pixels[i])) {
-      max = red(out.pixels[i]);
-    }
-  
+  float inRange = inMax - inMin;
+  if (inRange == 0) {
+    return newImg;  // evito divisione per 0
   }
-  
-  for(int i=0; i<out.pixels.length; i++){
-    out.pixels[i] = color(map(red(out.pixels[i]), min, max, 0, 255));
+
+  for(int i = 0; i < I.pixels.length; i++) {
+    color c = I.pixels[i];
+
+    // leggo i canali originali
+    float r = red(c);
+    float g = green(c);
+    float b = blue(c);
+
+    if(channel == 0) {
+      
+      float v = brightness(c);
+      float nv = outMin + (v - inMin) * (outMax - outMin) / inRange;
+      nv = constrain(nv, outMin, outMax);
+      newImg.pixels[i] = color(nv);
+      
+    } else {
+      float v;
+      switch (channel) {
+        case 1: 
+          v = r; 
+          break;
+        case 2: 
+          v = g; 
+          break;
+        case 3: 
+          v = b; 
+          break;
+        default: v = brightness(c); break;
+      }
+
+      float nv = outMin + (v - inMin) * (outMax - outMin) / inRange;
+      nv = constrain(nv, outMin, outMax);
+
+      switch(channel) {
+        case 1: 
+          r = nv; 
+          break;
+        case 2: 
+          g = nv; 
+          break;
+        case 3: 
+          b = nv; 
+          break;
+      }
+
+      newImg.pixels[i] = color(r, g, b);
+    }
   }
-  out.updatePixels();
-  
-  return out;
+
+  newImg.updatePixels();
+  return newImg;
 }
-
-
 
 // ISTOGRAMMA E EQUALIZZAZIONE
 //
@@ -326,3 +367,72 @@ PImage EQ(PImage I) {
 
   return out;
 }
+
+
+// k = numero di livelli (es. 4, 8, 16...)
+// channel:
+//   0 = grayscale (usa brightness, output BN)
+//   1 = solo rosso
+//   2 = solo verde
+//   3 = solo blu
+PImage applyQuantization(PImage I, int k, int channel) {
+  PImage newImg = I.copy();
+  
+  I.loadPixels();
+  newImg.loadPixels();
+  
+  if (k <= 1) {
+    // con k <= 1 non ha senso quantizzare
+    return newImg;
+  }
+  
+  float stepIn  = 256.0 / k;        // ampiezza di ogni intervallo in input
+  float stepOut = 255.0 / (k - 1);  // distanza tra livelli in output
+  
+  for (int i = 0; i < I.pixels.length; i++) {
+    color c = I.pixels[i];
+    
+    float r = red(c);
+    float g = green(c);
+    float b = blue(c);
+    
+    if (channel == 0) {
+      // quantizzazione in scala di grigi
+      float v = brightness(c);          // 0..255
+
+      int q = int(v / stepIn);          // livello 0..k-1
+      if (q > k - 1) q = k - 1;
+      
+      float nv = q * stepOut;           // nuovo valore 0..255 circa
+      nv = constrain(nv, 0, 255);
+      
+      newImg.pixels[i] = color(nv);     // immagine BN
+    } else {
+      float v;
+      switch (channel) {
+        case 1: v = r; break;
+        case 2: v = g; break;
+        case 3: v = b; break;
+        default: v = brightness(c); break;
+      }
+      
+      int q = int(v / stepIn);
+      if (q > k - 1) q = k - 1;
+      
+      float nv = q * stepOut;
+      nv = constrain(nv, 0, 255);
+      
+      switch (channel) {
+        case 1: r = nv; break;
+        case 2: g = nv; break;
+        case 3: b = nv; break;
+      }
+      
+      newImg.pixels[i] = color(r, g, b);
+    }
+  }
+  
+  newImg.updatePixels();
+  return newImg;
+}
+
