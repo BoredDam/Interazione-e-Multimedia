@@ -23,6 +23,7 @@ Al momento, gli esercizi includono:
   - filtro di sharpening (convolutivo)
   - contrast stretching 
   - equalizzazione
+  - quantizzazione
   - scambio di parti di un'immagine tramite get e set
 
 
