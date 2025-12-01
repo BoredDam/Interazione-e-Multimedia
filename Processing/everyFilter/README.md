@@ -51,3 +51,6 @@ Ottenuto creando in primis l'istogramma dell'immagine.
 
 ## 11 e 12. Scambio di parti dell'immagine
 Inserito in quanto molto richiesto negli esami.
+
+## 13. Quantizzazione
+È un filtro che serve a ridurre il numero di livelli possibili (es. 256 -> 10 livelli). Può essere applicato sia nell'immagine a scala di grigi sia ad ogni livello dell'RGB.
