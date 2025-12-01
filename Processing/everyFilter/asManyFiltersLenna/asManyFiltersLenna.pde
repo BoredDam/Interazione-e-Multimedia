@@ -1,8 +1,8 @@
 PImage lenna;
-float[][] kernel = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
+float[][] kernel = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}}; // edge enhancement kernel
 
 void setup() {
-  size(256*6, 512);
+  size(256*6, 256*3);
   lenna = loadImage("lenna.png");
   lenna.filter(GRAY);
   lenna.resize(256, 256);
@@ -16,12 +16,11 @@ void setup() {
   image(convoluzione(lenna, kernel), 256*1, 256);
   image(cutY(lenna), 256*2, 256);
   image(cutX(lenna), 256*3, 256);
-  image(contrastStr(lenna), 256*4, 256);
+  image(contrastStr(lenna, 0, 255, 100, 200), 256*4, 256);
   image(EQ(lenna), 256*5, 256);
+  image(quantization(lenna, 5), 0, 256*2);
 }
 
-void draw() {
-}
 
 // FILTRO DI GAMMA
 // FORMULA : gamma(x,y) = c*f(x,y)^gm ;
@@ -35,7 +34,7 @@ PImage gamma(PImage I, float gamma) {
 
   float c = 255/pow(255, gamma);
   for (int i=0; i<out.pixels.length; i++) {
-    nuColor = pow(green(out.pixels[i]), gamma);
+    nuColor = pow(brightness(out.pixels[i]), gamma);
     out.pixels[i] = color(nuColor*c);
   }
 
@@ -56,7 +55,7 @@ PImage logaritmico(PImage I) {
 
   float c = 255/log(255);
   for (int i=0; i<out.pixels.length; i++) {
-    nuColor = log(green(out.pixels[i]));
+    nuColor = log(brightness(out.pixels[i]));
     out.pixels[i] = color(nuColor*c);
   }
 
@@ -67,7 +66,6 @@ PImage logaritmico(PImage I) {
 
 // FILTRO NEGATIVO
 // FORMULA : neg(x,y) = 255 - f(x,y);
-//
 
 PImage negativo(PImage I) {
 
@@ -76,7 +74,7 @@ PImage negativo(PImage I) {
   float nuColor;
 
   for (int i=0; i<out.pixels.length; i++) {
-    nuColor = 255 - green(out.pixels[i]);
+    nuColor = 255 - brightness(out.pixels[i]);
     out.pixels[i] = color(nuColor);
   }
 
@@ -84,8 +82,10 @@ PImage negativo(PImage I) {
   return out;
 }
 
+
 // FILTRO DI MASSIMO
-// è un filtro locale basato sul rango
+// è un filtro locale basato sul rango. 
+// "prendi il massimo dell'area campionata"
 // non è applicabile la convoluzione
 
 PImage massimo(PImage I, int n) {
@@ -102,7 +102,7 @@ PImage massimo(PImage I, int n) {
       subOut.loadPixels();
 
       for (int i=0; i<subOut.pixels.length; i++) {
-        arr[i] = green(subOut.pixels[i]);
+        arr[i] = brightness(subOut.pixels[i]);
       }
 
       massimo = color(max(arr));
@@ -112,8 +112,10 @@ PImage massimo(PImage I, int n) {
   return out;
 }
 
+
 // FILTRO DI MINIMO
 // è un filtro locale basato sul rango
+// "prendi il minimo dell'area campionata"
 // non è applicabile la convoluzione
 
 PImage minimo(PImage I, int n) {
@@ -134,7 +136,7 @@ PImage minimo(PImage I, int n) {
 
       arr = new float[subOut.pixels.length];
       for (int i=0; i<subOut.pixels.length; i++) {
-        arr[i] = green(subOut.pixels[i]);
+        arr[i] = brightness(subOut.pixels[i]);
       }
 
       minimo = color(min(arr));
@@ -144,8 +146,10 @@ PImage minimo(PImage I, int n) {
   return out;
 }
 
+
 // FILTRO MEDIANO
 // è un filtro locale basato sul rango
+// "prendi il mediano dell'area campionata"
 // non è applicabile la convoluzione
 
 PImage mediano(PImage I, int n) {
@@ -167,7 +171,7 @@ PImage mediano(PImage I, int n) {
       arr = new float[subOut.pixels.length];
 
       for (int i=0; i<subOut.pixels.length; i++) {
-        arr[i] = green(subOut.pixels[i]);
+        arr[i] = brightness(subOut.pixels[i]);
       }
 
       arr = sort(arr);
@@ -186,8 +190,8 @@ PImage mediano(PImage I, int n) {
 
 
 // CONVOLUZIONE
-//
-//
+// questa funzione ti permette di applicare un kernel n*m
+// su un immagine, secondo la procedura standard di convoluzione.
 
 PImage convoluzione(PImage I, float[][] ker) {
 
@@ -203,7 +207,7 @@ PImage convoluzione(PImage I, float[][] ker) {
       nuValue = 0;
       for (int h=0; h<ker[0].length; h++) {
         for (int i=0; i<ker.length; i++) {
-          nuValue = green(subOut.get(h, i))*ker[i][h]+nuValue;
+          nuValue = brightness(subOut.get(h, i))*ker[i][h]+nuValue;
         }
       }
       nuValue = constrain(nuValue, 0, 255);
@@ -215,8 +219,6 @@ PImage convoluzione(PImage I, float[][] ker) {
 
 
 // INVERSIONE DI DUE PARTI DI UN IMMAGINE IN VERTICALE
-//
-//
 
 PImage cutY(PImage I) {
 
@@ -233,8 +235,6 @@ PImage cutY(PImage I) {
 
 
 // INVERSIONE DI DUE PARTI DI UN IMMAGINE IN ORIZZONTALE
-//
-//
 
 PImage cutX(PImage I) {
 
@@ -250,16 +250,13 @@ PImage cutX(PImage I) {
 }
 
 
-// channel:
-// 0 = grayscale (tutti i canali scalati allo stesso modo, usando brightness)
-// 1 = solo rosso
-// 2 = solo verde
-// 3 = solo blu
-// 
-PImage applyContrastStretching(PImage I,
-                               float inMin, float inMax,
-                               float outMin, float outMax,
-                               int channel) {
+// CONTRAST STRETCHING
+// questa funzione normalizza i valori dei pixel dell'immagine
+// in un range fornito. inMin e inMax di default è 0, 255.
+
+PImage contrastStr(PImage I,
+  float inMin, float inMax,
+  float outMin, float outMax) {
   PImage newImg = I.copy();
 
   I.loadPixels();
@@ -270,62 +267,19 @@ PImage applyContrastStretching(PImage I,
     return newImg;  // evito divisione per 0
   }
 
-  for(int i = 0; i < I.pixels.length; i++) {
+  for (int i = 0; i < I.pixels.length; i++) {
     color c = I.pixels[i];
-
-    // leggo i canali originali
-    float r = red(c);
-    float g = green(c);
-    float b = blue(c);
-
-    if(channel == 0) {
-      
-      float v = brightness(c);
-      float nv = outMin + (v - inMin) * (outMax - outMin) / inRange;
-      nv = constrain(nv, outMin, outMax);
-      newImg.pixels[i] = color(nv);
-      
-    } else {
-      float v;
-      switch (channel) {
-        case 1: 
-          v = r; 
-          break;
-        case 2: 
-          v = g; 
-          break;
-        case 3: 
-          v = b; 
-          break;
-        default: v = brightness(c); break;
-      }
-
-      float nv = outMin + (v - inMin) * (outMax - outMin) / inRange;
-      nv = constrain(nv, outMin, outMax);
-
-      switch(channel) {
-        case 1: 
-          r = nv; 
-          break;
-        case 2: 
-          g = nv; 
-          break;
-        case 3: 
-          b = nv; 
-          break;
-      }
-
-      newImg.pixels[i] = color(r, g, b);
-    }
+    float v = brightness(c); // o un blue(c), red(c), green(c) arbitrario
+    float nv = map(v, inMin, inMax, outMin, outMax);
+    newImg.pixels[i] = color(nv); 
   }
 
   newImg.updatePixels();
   return newImg;
 }
 
-// ISTOGRAMMA E EQUALIZZAZIONE
-//
-//
+
+// ISTOGRAMMA ED EQUALIZZAZIONE
 
 float [] istogramma(PImage I) {
   float [] H = new float[256];
@@ -337,7 +291,7 @@ float [] istogramma(PImage I) {
   I.loadPixels();
 
   for (int i = 0; i<I.pixels.length; i++) {
-    H[int(red(I.pixels[i]))]++;
+    H[int(brightness(I.pixels[i]))]++;
   }
 
   for (int i = 0; i<256; i++) {
@@ -361,7 +315,7 @@ PImage EQ(PImage I) {
   out.loadPixels();
 
   for (int i=0; i<out.pixels.length; i++) {
-    out.pixels[i] = color(255*H[int(red(out.pixels[i]))]);
+    out.pixels[i] = color(255*H[int(brightness(out.pixels[i]))]);
   }
   out.updatePixels();
 
@@ -369,70 +323,36 @@ PImage EQ(PImage I) {
 }
 
 
+// QUANTIZZAZIONE 
+// mappa un'immagine a 256 livelli di luminosità in k livelli di luminosità
 // k = numero di livelli (es. 4, 8, 16...)
-// channel:
-//   0 = grayscale (usa brightness, output BN)
-//   1 = solo rosso
-//   2 = solo verde
-//   3 = solo blu
-PImage applyQuantization(PImage I, int k, int channel) {
+
+PImage quantization(PImage I, int k) {
   PImage newImg = I.copy();
-  
+
   I.loadPixels();
   newImg.loadPixels();
-  
+
   if (k <= 1) {
     // con k <= 1 non ha senso quantizzare
     return newImg;
   }
-  
+
   float stepIn  = 256.0 / k;        // ampiezza di ogni intervallo in input
   float stepOut = 255.0 / (k - 1);  // distanza tra livelli in output
-  
+
   for (int i = 0; i < I.pixels.length; i++) {
     color c = I.pixels[i];
-    
-    float r = red(c);
-    float g = green(c);
-    float b = blue(c);
-    
-    if (channel == 0) {
-      // quantizzazione in scala di grigi
-      float v = brightness(c);          // 0..255
+    float v = brightness(c);          // 0..255
 
-      int q = int(v / stepIn);          // livello 0..k-1
-      if (q > k - 1) q = k - 1;
-      
-      float nv = q * stepOut;           // nuovo valore 0..255 circa
-      nv = constrain(nv, 0, 255);
-      
-      newImg.pixels[i] = color(nv);     // immagine BN
-    } else {
-      float v;
-      switch (channel) {
-        case 1: v = r; break;
-        case 2: v = g; break;
-        case 3: v = b; break;
-        default: v = brightness(c); break;
-      }
-      
-      int q = int(v / stepIn);
-      if (q > k - 1) q = k - 1;
-      
-      float nv = q * stepOut;
-      nv = constrain(nv, 0, 255);
-      
-      switch (channel) {
-        case 1: r = nv; break;
-        case 2: g = nv; break;
-        case 3: b = nv; break;
-      }
-      
-      newImg.pixels[i] = color(r, g, b);
-    }
+    int q = int(v / stepIn);          // livello 0..k-1
+    if (q > k - 1) q = k - 1;
+    
+    float nv = q * stepOut;           // nuovo valore 0..255 circa
+    nv = constrain(nv, 0, 255);
+    newImg.pixels[i] = color(nv);     // immagine BN
+
   }
-  
   newImg.updatePixels();
   return newImg;
 }
-
